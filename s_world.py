@@ -25,7 +25,7 @@ goalX = 4
 
 
 POLICY = True
-VALUES = False
+VALUES = True
 
 def inWall(x, y):
     return y == wallY and (x not in wallX)
@@ -96,23 +96,32 @@ if (POLICY):
     for y in range(maxVertical):
         for x in range(maxHorizontal):
             if inWall(x, y):
-                Policy[y][x] = "WALL"
+                Policy[y][x] = "\U0001F6A7"
                 continue
             if x == goalX and y == goalY:
-                Policy[y][x] = "GOAL"
+                Policy[y][x] = "\U0001F6A9"
                 continue
-            if x == startX and y == startY:
-                Policy[y][x] = "START"
-                continue
+            
             action = np.argmax(Q[y,x,:])
+
+            if x == startX and y == startY:
+                if action == UP:
+                    Policy[y][x] = "\u21E7"
+                elif action == DOWN:
+                    Policy[y][x] = "\u21E9"
+                elif action == RIGHT:
+                    Policy[y][x] = "\u21E8"
+                elif action == LEFT:
+                    Policy[y][x] = "\u21E6"
+                continue
             if action == UP:
-                Policy[y][x] = "UP"
+                Policy[y][x] = "\U0001F845"
             elif action == DOWN:
-                Policy[y][x] = "DOWN"
-            elif action == LEFT:
-                Policy[y][x] = "LEFT"
+                Policy[y][x] = "\U0001F847"
             elif action == RIGHT:
-                Policy[y][x] = "RIGHT"  			
+                Policy[y][x] = "\U0001F846" 
+            elif action == LEFT:
+                Policy[y][x] = "\U0001F844"
             else:
                 print('Invalid action in policy')
 
@@ -122,10 +131,11 @@ if (POLICY):
 
 if VALUES:
     labels = ["UP", "DOWN", "RIGHT", "LEFT"]
-    Q = Q.round(decimals=3)
     for i, label in enumerate(labels):
         print()
         print(label)
         for row in Q[:, :, i]:
-            output = "\t".join([str(cell) for cell in row])
+            rounded_output = [f"{cell:.2f}" for cell in row]
+            aligned_output = [" " + cell if cell == "0.00" else cell for cell in rounded_output]
+            output = "\t".join(aligned_output)
             print(output)
