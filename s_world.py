@@ -23,8 +23,9 @@ wallX = [8, 9]
 goalY = 1
 goalX = 4
 
-POLICY = False
-VALUES = True
+
+POLICY = True
+VALUES = False
 
 def inWall(x, y):
     return y == wallY and (x not in wallX)
@@ -35,13 +36,14 @@ for epoch in range (maxEpisodes):
     x = startX
     terminal = 0
 
-    while (terminal != 1):
-        if random() > epsilon:
-            action = np.argmax(Q[y, x, :])
-        else:
-            action = randint(0, maxState-1)
-        reward = -1
+    if random() > epsilon:
+        action = np.argmax(Q[y, x, :])
+    else:
+        action = randint(0, maxState-1)
+    
 
+    while (terminal != 1):
+        reward = -1
         if action == UP:
             next_y = y - 1
             next_x = x
@@ -73,11 +75,15 @@ for epoch in range (maxEpisodes):
             next_y = y
             next_x = x
         
+        if random() > epsilon:
+            next_action = np.argmax(Q[next_y, next_x, :])
+        else:
+            next_action = randint(0, maxState-1)
         # do reward shit
+        
         if ((next_y == goalY) and (next_x == goalX)):
             terminal = 1
-
-        next_action =  np.argmax(Q[next_y,next_x,:])
+        
         Q[y,x,action] = Q[y,x,action] + (alpha * (reward + (gamma * Q[next_y,next_x,next_action]) - Q[y,x,action]))
 
         action = next_action
